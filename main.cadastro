@@ -1,0 +1,19 @@
+import sqlalchemy
+from fastapi import FastAPI
+from pydantic import BaseModel
+import pandas as pd
+
+app = FastAPI()
+
+db_connection_str = 'mysql+pymysql://root:''@localhost:3306/testweb'
+engine = sqlalchemy.create_engine(db_connection_str)
+
+class Item(BaseModel):
+    username : str
+    password : str
+
+@app.post("/teste")
+def teste(item : Item):
+    df = pd.DataFrame.from_dict(item.dict(), orient="index").T
+    df.to_sql("testphp", con=engine, index=False, if_exists= "append")
+    return item
